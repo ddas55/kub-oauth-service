@@ -1,0 +1,38 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: dp-auth-service
+spec:
+  replicas: 1
+  selector:
+   matchLabels:
+    app: pod-auth-service
+    env: dev
+  template:
+    metadata:
+      labels:
+        app: pod-auth-service
+        env: dev
+    spec:
+      containers:
+      - name: cont-auth-service
+        image: ddas55/oauth-service
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8901
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        volumeMounts:
+        - name: vm-auth-service
+          mountPath: "/config/" 
+          readOnly: true
+      volumes:
+      - name: vm-auth-service
+        configMap:
+          name: cm-auth-service
+          items:
+          - key: application.properties 
+            path: application.properties
